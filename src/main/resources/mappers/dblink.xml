@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.co.kr.sqltoweb.dao.DblinkDao">
+
+    <!--REGION_AREA를 못 읽어와서 하나하나 매핑 시켜줬다
+        property는 dto에서 쓰는 변수 이름
+        column은 db에서 쓰는 변수 이름-->
+    <resultMap id="Result" type="ResultDTO">
+        <result property="REGION_AREA" column="REGION_AREA"></result>
+        <result property="p0" column="P0"></result>
+        <result property="p1" column="P1"></result>
+        <result property="p2" column="P2"></result>
+        <result property="p3" column="P3"></result>
+        <result property="p4" column="P4"></result>
+        <result property="p5" column="P5"></result>
+        <result property="p6" column="P6"></result>
+        <result property="p7" column="P7"></result>
+        <result property="p8" column="P8"></result>
+        <result property="p9" column="P9"></result>
+        <result property="TOT" column="TOT"></result>
+    </resultMap>
+
+    <select id="DblinkMapper" resultMap="Result" parameterType="ParameterDTO">
+        SELECT DECODE(CD_NM, NULL, '총계', DECODE(REGION_AREA, NULL, CD_NM || '합계', CD_NM)) NM,
+        REGION_AREA,
+        P0 || '( ' || to_char(ROUND((P0 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P0_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P0_1, 1, '▲') || '*' || P0_1 P0,
+        P1 || '( ' || to_char(ROUND((P1 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P1_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P1_1, 1, '▲') || '*' || P1_1 P1,
+        P2 || '( ' || to_char(ROUND((P2 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P2_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P2_1, 1, '▲') || '*' || P2_1 P2,
+        P3 || '( ' || to_char(ROUND((P3 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P3_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P3_1, 1, '▲') || '*' || P3_1 P3,
+        P4 || '( ' || to_char(ROUND((P4 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P4_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P4_1, 1, '▲') || '*' || P4_1 P4,
+        P5 || '( ' || to_char(ROUND((P5 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P5_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P5_1, 1, '▲') || '*' || P5_1 P5,
+        P6 || '( ' || to_char(ROUND((P6 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P6_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P6_1, 1, '▲') || '*' || P6_1 P6,
+        P7 || '( ' || to_char(ROUND((P7 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P7_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P7_1, 1, '▲') || '*' || P7_1 P7,
+        P8 || '( ' || to_char(ROUND((P8 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P8_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P8_1, 1, '▲') || '*' || P8_1 P8,
+        P9 || '( ' || to_char(ROUND((P9 / TOT) * 100, 2),'fm990.0') || '%)' || DECODE(P9_1, GREATEST(P0_1, P1_1, P2_1, P3_1, P4_1, P5_1, P6_1, P7_1, P8_1, P9_1), '▼') || DECODE(P9_1, 1, '▲') || '*' || P9_1 P9,
+        TOT
+        FROM
+        (
+        SELECT
+        AREA_CD, max(gr) gr,
+        REGION_AREA,
+        NVL(SUM(DECODE(prod_id, '100000', SALE_CNT)), 0) P0,
+        NVL(SUM(DECODE(prod_id, '100001', SALE_CNT)), 0) P1,
+        NVL(SUM(DECODE(prod_id, '100002', SALE_CNT)), 0) P2,
+        NVL(SUM(DECODE(prod_id, '100003', SALE_CNT)), 0) P3,
+        NVL(SUM(DECODE(prod_id, '100004', SALE_CNT)), 0) P4,
+        NVL(SUM(DECODE(prod_id, '100005', SALE_CNT)), 0) P5,
+        NVL(SUM(DECODE(prod_id, '100006', SALE_CNT)), 0) P6,
+        NVL(SUM(DECODE(prod_id, '100007', SALE_CNT)), 0) P7,
+        NVL(SUM(DECODE(prod_id, '100008', SALE_CNT)), 0) P8,
+        NVL(SUM(DECODE(prod_id, '100009', SALE_CNT)), 0) P9,
+        NVL(SUM(DECODE(PROD_ID, '100000', RK)), MAX(RK) + 1) P0_1,
+        NVL(SUM(DECODE(PROD_ID, '100001', RK)), MAX(RK) + 1) P1_1,
+        NVL(SUM(DECODE(PROD_ID, '100002', RK)), MAX(RK) + 1) P2_1,
+        NVL(SUM(DECODE(PROD_ID, '100003', RK)), MAX(RK) + 1) P3_1,
+        NVL(SUM(DECODE(PROD_ID, '100004', RK)), MAX(RK) + 1) P4_1,
+        NVL(SUM(DECODE(PROD_ID, '100005', RK)), MAX(RK) + 1) P5_1,
+        NVL(SUM(DECODE(PROD_ID, '100006', RK)), MAX(RK) + 1) P6_1,
+        NVL(SUM(DECODE(PROD_ID, '100007', RK)), MAX(RK) + 1) P7_1,
+        NVL(SUM(DECODE(PROD_ID, '100008', RK)), MAX(RK) + 1) P8_1,
+        NVL(SUM(DECODE(PROD_ID, '100009', RK)), MAX(RK) + 1) P9_1,
+        SUM(SALE_CNT) TOT
+        FROM
+        (
+        SELECT
+        AREA_CD,
+        REGION_AREA,
+        PROD_ID,
+        SUM(SALE_CNT) SALE_CNT,
+        DENSE_RANK() OVER(PARTITION BY AREA_CD, REGION_AREA ORDER BY SUM(SALE_CNT) DESC) RK,
+        grouping(area_cd)||grouping(region_area) gr
+        FROM
+        SALE_TBL
+
+        where 1=1
+        <if test='area != null'>
+            AND area_cd = #{area}
+        </if>
+        <if test='RN != null'>
+            AND ROWNUM <![CDATA[<]]>= NVL(#{RN}, ROWNUM)
+        </if>
+        GROUP BY
+        PROD_ID,
+        ROLLUP (AREA_CD, REGION_AREA)
+        )
+        WHERE 1=1
+        <if test='GGR != null'>
+            AND GR = DECODE(#{GGR}, 'T', '11', 'M','01','R', '00', GR)
+        </if>
+        GROUP BY
+        AREA_CD,
+        REGION_AREA
+        ) A,
+        CD_TBL B
+        WHERE A.AREA_CD = B.CD_ID(+)
+        ORDER BY
+        decode(area_cd,'10', #{v_10}
+        ,'20', #{v_20}
+        ,'30', #{v_30}
+        ,'40', #{v_40}
+        ,'50', #{v_50}
+        ,'60', #{v_60}
+        ,'70', #{v_70}
+        ,'80', #{v_80}
+        ,'90', #{v_90})
+        <if test='arg_dir != null'>
+            ,decode(#{arg_dir}, 'f', 1, -1)* gr
+        </if>
+
+    </select>
+</mapper>
